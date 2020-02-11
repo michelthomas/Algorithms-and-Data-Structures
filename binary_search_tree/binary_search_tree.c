@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include "binary_search_tree.h"
 
+bs_tree *create_empty_binary_tree() {
+    return NULL;
+}
 
 bs_tree *create_binary_search_tree(int key, int data, int size, int height, int depth, bs_tree *parent, bs_tree *left_tree,
                                    bs_tree *right_tree) {
@@ -178,7 +181,7 @@ int depth(bs_tree *tree) {
     return depth(tree->parent) + 1;
 }
 
-void deallocate(bs_tree *node) {
+void deallocate(bs_tree *node) { // TODO fix this
     node->parent = NULL;
     node->left = NULL;
     node->right = NULL;
@@ -250,6 +253,17 @@ void print_pre_order(bs_tree *tree) {
         printf("%d ", tree->key);
         print_pre_order(tree->left);
         print_pre_order(tree->right);
+    }
+}
+
+void print_pre_order_with_parentheses(bs_tree *tree) {
+    if (is_empty(tree)) {
+        printf(" () ");
+    } else {
+        printf(" ( %d ", tree->key);
+        print_pre_order_with_parentheses(tree->left);
+        print_pre_order_with_parentheses(tree->right);
+        printf(") ");
     }
 }
 

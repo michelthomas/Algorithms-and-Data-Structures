@@ -18,6 +18,7 @@ struct binary_search_tree {
     bs_tree *right;
 };
 
+bs_tree *create_empty_binary_tree();
 bs_tree *create_binary_search_tree(int key, int data, int size, int height, int depth, bs_tree *parent, bs_tree *left_tree,
                                    bs_tree *right_tree);
 bs_tree *create_binary_tree(int item, bs_tree *left, bs_tree *right);
@@ -42,6 +43,7 @@ bs_tree* update_height(bs_tree *tree);
 int depth(bs_tree *tree);
 
 void print_pre_order(bs_tree *tree);
+void print_pre_order_with_parentheses(bs_tree *tree);
 void print_in_order(bs_tree *tree);
 void print_post_order(bs_tree *tree);
 int is_empty(bs_tree *tree);

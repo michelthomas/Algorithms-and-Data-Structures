@@ -2,8 +2,17 @@
 #include <stdlib.h>
 #include "binary_search_tree.h"
 
-int main() {
+void teste();
 
+// Inserção em Árvores de Busca Binária - Huxley p.783
+void insercao();
+
+int main() {
+    insercao();
+    return 0;
+}
+
+void teste() {
     bs_tree *my_bt = NULL;
 
     char string[100];
@@ -24,6 +33,21 @@ int main() {
         printf("nos com um filho: ");
         print_in_order(get_parents_with_one_child(my_bt, NULL));
     }
+}
 
-    return 0;
+void insercao() {
+    int n;
+
+    bs_tree *t = create_empty_binary_tree();
+
+    printf("----\n");
+    while (scanf(" %d", &n) != EOF) {
+
+        t = add(t, n, n);
+
+        printf("Adicionando %d\n", n);
+        printf("   ");
+        print_pre_order_with_parentheses(t);
+        printf("\n----\n");
+    }
 }
