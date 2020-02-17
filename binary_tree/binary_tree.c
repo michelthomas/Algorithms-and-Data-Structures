@@ -8,7 +8,7 @@
 #include "binary_tree.h"
 
 b_tree *create_binary_tree(int item, int valor, b_tree *left, b_tree *right) {
-    b_tree *bt = (b_tree*) malloc(sizeof(b_tree));
+    b_tree *bt = (b_tree *) malloc(sizeof(b_tree));
 
     bt->key = item;
     bt->valor = valor;
@@ -87,7 +87,6 @@ void print_pre_order_with_parentheses(b_tree *tree) {
     }
 }
 
-
 void aux_is_binary_search_tree(b_tree *tree, int *list, int *i) {
     if (!is_empty(tree)) {
         aux_is_binary_search_tree(tree->left, list, i);
@@ -98,7 +97,7 @@ void aux_is_binary_search_tree(b_tree *tree, int *list, int *i) {
 }
 
 int is_binary_search_tree(b_tree *tree) {
-    if (is_empty(tree)){
+    if (is_empty(tree)) {
         return 1;
     }
 
@@ -120,7 +119,7 @@ int is_binary_search_tree(b_tree *tree) {
 int is_leaf(b_tree *tree) {
     if (is_empty(tree)) {
         return 0;
-    } else if (is_empty(tree->left) && is_empty(tree->right)){
+    } else if (is_empty(tree->left) && is_empty(tree->right)) {
         return 1;
     }
 
@@ -128,7 +127,7 @@ int is_leaf(b_tree *tree) {
 }
 
 int get_key_number(char *string, int *i) {
-    char key_str[10];
+    char key_str[100];
 
     int j = 0;
 
@@ -143,32 +142,34 @@ int get_key_number(char *string, int *i) {
     return atoi(key_str);
 }
 
-b_tree* create_binary_tree_from_string(char *string, int *i) {
-    if (string[*i] == ')') {
+b_tree *_create_binary_tree_from_string(char *str, int *i) {
+/*
+    if (str[*i] == ')') {
         return NULL;
     }
 
-    if (string[*i] == ' ') {
+    if (str[*i] == ' ') {
         (*i)++;
     }
+*/
 
-    if (string[*i] == '(') {
+    if (str[*i] == '(') {
         (*i)++;
     }
 
     b_tree *new_bt = NULL;
 
-    if (string[*i] != ')') {
-        new_bt = create_binary_tree(get_key_number(string, i), 0, NULL, NULL);
-        new_bt->left = create_binary_tree_from_string(string, i);
+    if (str[*i] != ')') {
+        new_bt = create_binary_tree(get_key_number(str, i), 0, NULL, NULL);
+        new_bt->left = _create_binary_tree_from_string(str, i);
 
-        if(!is_empty(new_bt->left)) {
+        if (!is_empty(new_bt->left)) {
             new_bt->left->parent = new_bt;
         }
 
-        new_bt->right = create_binary_tree_from_string(string, i);
+        new_bt->right = _create_binary_tree_from_string(str, i);
 
-        if(!is_empty(new_bt->right)) {
+        if (!is_empty(new_bt->right)) {
             new_bt->right->parent = new_bt;
         }
 
@@ -177,4 +178,33 @@ b_tree* create_binary_tree_from_string(char *string, int *i) {
     (*i)++;
 
     return new_bt;
+}
+
+b_tree *create_binary_tree_from_string(char *str) {
+    int i = 0;
+
+    return _create_binary_tree_from_string(str, &i);
+}
+
+
+b_tree *_create_binary_tree_from_arr(b_tree *t, int arr[], int i, int n) {
+
+    if (i > n) {
+        return NULL;
+    }
+
+    t = create_binary_tree(arr[i - 1], arr[i - 1], NULL, NULL);
+
+    t->left = _create_binary_tree_from_arr(t, arr, 2 * i, n);
+    t->right = _create_binary_tree_from_arr(t, arr, 2 * i + 1, n);
+
+    return t;
+}
+
+
+b_tree *create_binary_tree_from_arr(int arr[], int n) {
+
+    b_tree *t = NULL;
+
+    return _create_binary_tree_from_arr(t, arr, 1, n);
 }

@@ -1,22 +1,38 @@
 #include <stdio.h>
+#include <math.h>
 
 #include "binary_tree.h"
 
 // Árvore de Busca Binária - Huxley p.546
 void arv_busc_b();
 
+
 // Profundidade de um nó em uma árvore binária - Huxley p.547
 void profundidade_no();
 
+
 // Em cada nível da árvore - Huxley p.949
 void nivel_arvore();
-b_tree *construct_tree(int tree_m[][3], int i);
 
+b_tree *construct_tree(int tree_m[][3], int i);
 
 void get_levels(int n, b_tree *tree, int tree_matrix[][3], int values[][n], int level, int index_column[n]);
 
+
+// Ache o P1 dessa árvore - Huxley p.150
+void p1_da_arvore();
+
+
+// Somando Árvores - Huxley p.596
+void somando_arvores();
+
+int contem_soma(b_tree *t, int soma);
+
+
 int main() {
-    nivel_arvore();
+
+    somando_arvores();
+
     return 0;
 }
 
@@ -27,9 +43,7 @@ void profundidade_no() {
     int n = 0;
     scanf("%d", &n);
 
-    int i = 0; // TODO change to two functions
-
-    b_tree *t = create_binary_tree_from_string(str, &i);
+    b_tree *t = create_binary_tree_from_string(str);
 
     /*print_pre_order(t);
     printf("\n");
@@ -51,9 +65,7 @@ void arv_busc_b() {
     char str[1000];
     scanf("%[^\n]", str);
 
-    int i = 0; // TODO change to two functions
-
-    b_tree *t = create_binary_tree_from_string(str, &i);
+    b_tree *t = create_binary_tree_from_string(str);
 
     /*print_pre_order(t);
     printf("\n");
@@ -120,7 +132,7 @@ void nivel_arvore() {
             for (j = 1; j <= indexes_column[i]; ++j) {
                 //printf("%d ", values_per_level[i][j]);
 
-                if(values_per_level[i][j] > max) {
+                if (values_per_level[i][j] > max) {
                     max = values_per_level[i][j];
                 } else if (values_per_level[i][j] < min) {
                     min = values_per_level[i][j];
@@ -157,4 +169,117 @@ b_tree *construct_tree(int tree_m[][3], int i) {
     t->right = construct_tree(tree_m, tree_m[i][2]);
 
     return t;
+}
+
+int max(int x, int y) {
+    return x > y ? x : y;
+}
+
+int p1(b_tree *t) {
+
+    if (is_leaf(t)) {
+        return t->key;
+    }
+
+    return max(t->key * p1(t->left), t->key * p1(t->right));
+}
+
+void p1_da_arvore() {
+    int h;
+    scanf("%d", &h);
+
+    int qtd_node = (int) pow(2, h) - 1;
+
+    int arr[qtd_node];
+
+    for (int i = 0; i < qtd_node; ++i) {
+        scanf("%d", &arr[i]);
+    }
+
+    b_tree *t = create_binary_tree_from_arr(arr, qtd_node);
+
+    printf("%d", p1(t));
+
+}
+
+int _contem_soma(b_tree *t, int soma_atual, int soma) {
+
+    if (is_empty(t)) {
+        return 0;
+    }
+
+    if (is_leaf(t)) {
+
+        if (t->key + soma_atual == soma) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    if (_contem_soma(t->left, t->key + soma_atual, soma)) {
+        return 1;
+    }
+
+    return _contem_soma(t->right, t->key + soma_atual, soma);
+}
+
+int contem_soma(b_tree *t, int soma) {
+
+    if (is_empty(t)) {
+        return 0;
+    }
+
+    return _contem_soma(t, 0, soma);
+}
+
+void get_string(char *str) {
+
+    char c;
+
+    int i = 0;
+    int qtd_parenteses = 0;
+
+    do {
+        scanf("%c", &c);
+
+        if (c != ' ' && c != '\n') {
+            str[i] = c;
+            i++;
+
+            if (c == ')') {
+                qtd_parenteses--;
+            } else if (c == '(') {
+                qtd_parenteses++;
+            }
+        }
+    } while (qtd_parenteses);
+
+    str[i] = '\0';
+}
+
+void somando_arvores() {
+    int soma = 0;
+    char str[10000];
+
+    scanf("%d ", &soma);
+
+    while (soma != -1000) {
+
+        get_string(str);
+
+        //printf("%s\n---\n", str);
+
+        b_tree *t = create_binary_tree_from_string(str);
+
+        //print_pre_order_with_parentheses(t);
+
+        if (contem_soma(t, soma)) {
+            printf("sim\n");
+        } else {
+            printf("nao\n");
+        }
+
+        scanf("%d ", &soma);
+    }
 }
