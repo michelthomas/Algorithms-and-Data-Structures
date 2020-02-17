@@ -10,7 +10,7 @@
 avl_tree *create_binary_tree(int key, int data, int size, int height, int depth, avl_tree *parent, avl_tree *left_tree,
                              avl_tree *right_tree) {
 
-    avl_tree *new_tree = (avl_tree*) malloc(sizeof(avl_tree));
+    avl_tree *new_tree = (avl_tree *) malloc(sizeof(avl_tree));
 
     new_tree->parent = parent;
     new_tree->key = key;
@@ -28,7 +28,7 @@ int is_empty(avl_tree *tree) {
     return (tree == NULL);
 }
 
-avl_tree* insert(avl_tree *parent_tree, avl_tree* tree) {
+avl_tree *insert(avl_tree *parent_tree, avl_tree *tree) {
     avl_tree *y = NULL;
     avl_tree *x = parent_tree;
 
@@ -62,14 +62,23 @@ avl_tree *add(avl_tree *parent_tree, int key, int data) {
 
     parent_tree = insert(parent_tree, new_tree);
 
-    parent_tree = rebalance(parent_tree, new_tree);
+    if (is_balanced(parent_tree, new_tree)) {
+        printf("Continuou AVL...\n  ");
+    } else {
+        printf("Antes de ajustar balanceamento...\n  ");
+        print_pre_order_with_parentheses(parent_tree);
+        parent_tree = rebalance(parent_tree, new_tree);
+        printf("\nDepois de ajustar balanceamento...\n  ");
+    }
+
+    print_pre_order_with_parentheses(parent_tree);
+    printf("\n");
 
     return parent_tree;
 }
 
 
-
-avl_tree* search(avl_tree *tree, int key) {
+avl_tree *search(avl_tree *tree, int key) {
     if (is_empty(tree) || key == tree->key) {
         return tree;
     } else if (key < tree->key) {
@@ -80,7 +89,7 @@ avl_tree* search(avl_tree *tree, int key) {
 }
 
 /* On most computers, the iterative version is more efficient. Cormen - Introduction to Algorithms*/
-avl_tree* iterative_search(avl_tree *tree, int key) {
+avl_tree *iterative_search(avl_tree *tree, int key) {
     while (!is_empty(tree) || key != tree->key) {
         if (key < tree->key) {
             tree = tree->left;
@@ -91,14 +100,14 @@ avl_tree* iterative_search(avl_tree *tree, int key) {
     return tree;
 }
 
-avl_tree* min(avl_tree *tree) {
+avl_tree *min(avl_tree *tree) {
     while (!is_empty(tree->left)) {
         tree = tree->left;
     }
     return tree;
 }
 
-avl_tree* max(avl_tree *tree) {
+avl_tree *max(avl_tree *tree) {
     while (!is_empty(tree->right)) {
         tree = tree->right;
     }
@@ -106,7 +115,7 @@ avl_tree* max(avl_tree *tree) {
 }
 
 
-avl_tree* predecessor(avl_tree *tree) {
+avl_tree *predecessor(avl_tree *tree) {
     if (!is_empty(tree->left)) {
         return max(tree->left);
     }
@@ -121,7 +130,7 @@ avl_tree* predecessor(avl_tree *tree) {
     return parent;
 }
 
-avl_tree* successor(avl_tree *tree) {
+avl_tree *successor(avl_tree *tree) {
     if (!is_empty(tree->right)) {
         return min(tree->right);
     }
@@ -144,7 +153,7 @@ int size(avl_tree *tree) {
     return size(tree->left) + size(tree->right) + 1;
 }
 
-avl_tree* update_size(avl_tree *tree) {
+avl_tree *update_size(avl_tree *tree) {
     if (is_empty(tree->parent)) {
         tree->size = size(tree);
         return tree;
@@ -167,7 +176,7 @@ int height(avl_tree *tree) {
     return max_number(height(tree->left), height(tree->right)) + 1;
 }
 
-avl_tree* update_height(avl_tree *tree) {
+avl_tree *update_height(avl_tree *tree) {
     tree->height = height(tree);
     return tree;
 }
@@ -203,7 +212,7 @@ avl_tree *transplant(avl_tree *root, avl_tree *u, avl_tree *v) {
     return root;
 }
 
-avl_tree* remove_node(avl_tree *tree, int key) {
+avl_tree *remove_node(avl_tree *tree, int key) {
     avl_tree *node = search(tree, key);
 
     if (node) {
@@ -213,7 +222,7 @@ avl_tree* remove_node(avl_tree *tree, int key) {
     return tree;
 }
 
-avl_tree *delete(avl_tree *root, avl_tree* node) {
+avl_tree *delete(avl_tree *root, avl_tree *node) {
     if (is_empty(node->left)) {
         root = transplant(root, node, node->right);
         root = update_size(node->parent);
@@ -250,7 +259,7 @@ avl_tree *delete(avl_tree *root, avl_tree* node) {
     return root;
 }
 
-avl_tree* left_rotate(avl_tree *tree, avl_tree *x) {
+avl_tree *left_rotate(avl_tree *tree, avl_tree *x) {
     avl_tree *y = x->right;
     y->parent = x->parent;
 
@@ -266,7 +275,7 @@ avl_tree* left_rotate(avl_tree *tree, avl_tree *x) {
 
     x->right = y->left;
 
-    if (!is_empty(x->right)){
+    if (!is_empty(x->right)) {
         x->right->parent = x;
     }
 
@@ -279,7 +288,7 @@ avl_tree* left_rotate(avl_tree *tree, avl_tree *x) {
     return tree;
 }
 
-avl_tree* right_rotate(avl_tree *tree, avl_tree *x) {
+avl_tree *right_rotate(avl_tree *tree, avl_tree *x) {
     avl_tree *y = x->left;
     y->parent = x->parent;
 
@@ -295,7 +304,7 @@ avl_tree* right_rotate(avl_tree *tree, avl_tree *x) {
 
     x->left = y->right;
 
-    if (!is_empty(x->left)){
+    if (!is_empty(x->left)) {
         x->left->parent = x;
     }
 
@@ -308,22 +317,33 @@ avl_tree* right_rotate(avl_tree *tree, avl_tree *x) {
     return tree;
 }
 
-avl_tree* rebalance(avl_tree *tree, avl_tree *node) {
+int is_balanced(avl_tree *tree, avl_tree *node) {
+    while (!is_empty(node)) {
+
+        if ((height(node->left) >= 2 + height(node->right)) || (height(node->right) >= 2 + height(node->left))) {
+            return 0;
+        }
+
+        node = node->parent;
+    }
+
+    return 1;
+}
+
+avl_tree *rebalance(avl_tree *tree, avl_tree *node) {
     while (!is_empty(node)) {
         tree = update_height(node);
         if (height(node->left) >= 2 + height(node->right)) {
             if (height(node->left->left) >= height(node->left->right)) {
                 tree = right_rotate(tree, node);
-            }
-            else {
+            } else {
                 tree = left_rotate(tree, node->left);
                 tree = right_rotate(tree, node);
             }
         } else if (height(node->right) >= 2 + height(node->left)) {
             if (height(node->right->right) >= height(node->right->left)) {
                 tree = left_rotate(tree, node);
-            }
-            else {
+            } else {
                 tree = right_rotate(tree, node->right);
                 tree = left_rotate(tree, node);
             }
@@ -343,6 +363,17 @@ void print_pre_order(avl_tree *tree) {
     }
 }
 
+void print_pre_order_with_parentheses(avl_tree *tree) {
+    if (is_empty(tree)) {
+        printf(" () ");
+    } else {
+        printf(" ( %d ", tree->key);
+        print_pre_order_with_parentheses(tree->left);
+        print_pre_order_with_parentheses(tree->right);
+        printf(") ");
+    }
+}
+
 void print_in_order(avl_tree *tree) {
     if (!is_empty(tree)) {
         print_in_order(tree->left);
@@ -358,3 +389,4 @@ void print_post_order(avl_tree *tree) {
         printf("%d ", tree->key);
     }
 }
+
