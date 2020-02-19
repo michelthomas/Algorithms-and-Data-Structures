@@ -4,16 +4,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "graph.h"
 #include "queue.h"
 
 graph *create_graph(int vertices_qtd) {
     graph *new_graph = (graph *) malloc(sizeof(graph));
-
     new_graph->vertices_qtd = vertices_qtd;
     new_graph->vertices = (adj_list *) malloc(sizeof(adj_list) * vertices_qtd);
     new_graph->visited = (int *) malloc(sizeof(int) * vertices_qtd);
     new_graph->pred_dist_arr = (pred_dist *) malloc(sizeof(pred_dist) * vertices_qtd);
+    new_graph->current_size = 0;
+
 
     return new_graph;
 }
@@ -22,13 +24,14 @@ graph *create_graph_init_vertices(int vertices_qtd) {
     graph *new_graph = (graph *) malloc(sizeof(graph));
 
     new_graph->vertices_qtd = vertices_qtd;
+    new_graph->current_size = 0;
     new_graph->vertices = (adj_list *) malloc(sizeof(adj_list) * vertices_qtd);
     new_graph->visited = (int *) malloc(sizeof(int) * vertices_qtd);
     new_graph->pred_dist_arr = (pred_dist *) malloc(sizeof(pred_dist) * vertices_qtd);
 
     for (int i = 0; i < vertices_qtd; i++) {
         new_graph->vertices[i].list = NULL;
-        new_graph->vertices[i].item_qtd = 0;
+        new_graph->vertices[i].str[0] = '\0';
         new_graph->visited[i] = 0;
         new_graph->pred_dist_arr[i].predecessor = -1;
         new_graph->pred_dist_arr[i].dist = -1;
@@ -41,12 +44,25 @@ void init_vertex(graph *g, int v) {
 
     if (g->pred_dist_arr[v].predecessor != -1) {
         g->vertices[v].list = NULL;
-        g->vertices[v].item_qtd = 0;
+        g->vertices[v].str[0] = '\0';
         g->visited[v] = 0;
         g->pred_dist_arr[v].predecessor = -1;
         g->pred_dist_arr[v].dist = -1;
 
     }
+}
+
+graph *init_vertex_with_str(graph *g, char *str) {
+    g->vertices[g->current_size].list = NULL;
+    g->vertices[g->current_size].str[0] = '\0';
+    strcpy(g->vertices[g->current_size].str, str);
+    g->visited[g->current_size] = 0;
+    g->pred_dist_arr[g->current_size].predecessor = -1;
+    g->pred_dist_arr[g->current_size].dist = -1;
+
+    g->current_size = g->current_size + 1;
+
+    return g;
 }
 
 void add_edge_directional(graph *g, int vertex1, int vertex2) {
@@ -193,8 +209,8 @@ node *get_path(graph *g, int source, int dest) {
 }
 
 void print_graph(graph *graph) {
-    for (int i = 0; i < graph->vertices_qtd; ++i) {
-        printf("%d | ", i);
+    for (int i = 0; i < graph->current_size; ++i) {
+        printf("%d %s | ", i, graph->vertices[i].str);
         print_linked_list(graph->vertices[i].list);
         printf("\n");
     }
@@ -243,3 +259,57 @@ void clear_search_data(graph *g) {
     }
 }
 
+
+int contains(graph *g, char *str) {
+    for (int i = 0; i < g->current_size; ++i) {
+        if (strcmp(g->vertices[i].str, str) == 0) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+int get_index(graph *g, char *str) {
+    for (int i = 0; i < g->current_size; ++i) {
+        if (strcmp(g->vertices[i].str, str) == 0) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+graph *remove_leafs(graph *g) {
+
+    graph *new_g = create_graph(g->current_size);
+
+    int j = 0;
+    for (int i = 0; i < g->current_size; ++i) {
+        if (!is_empty(g->vertices[i].list)) {
+            init_vertex_with_str(new_g, g->vertices[i].str);
+
+
+            new_g->vertices[j].list = g->vertices[i].list;
+
+
+            node *head = new_g->vertices[j].list;
+
+            while (new_g->vertices[j].list) {
+                if (is_empty(g->vertices[new_g->vertices[j].list->key].list)) {
+                   head =  remove_node(head, new_g->vertices[j].list);
+                }
+
+                new_g->vertices[j].list = new_g->vertices[j].list->next;
+            }
+
+            new_g->vertices[j].list = head;
+
+            j++;
+        }
+    }
+
+    free(g);
+
+    return new_g;
+}

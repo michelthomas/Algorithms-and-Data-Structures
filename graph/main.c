@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "graph.h"
 #include "queue.h"
 
@@ -14,9 +15,10 @@ void suspeitos();
 
 void suspeitos_v2();
 
+void dfs_ordem_crescente();
 
 int main() {
-    suspeitos_v2();
+    dfs_ordem_crescente();
     return 0;
 }
 
@@ -240,4 +242,52 @@ void suspeitos_v2() {
         scanf("%d %d", &qtd_estudantes, &grupos);
     }
 
+}
+
+void dfs_ordem_crescente() {
+    int testes;
+    scanf("%d", &testes);
+
+    graph *g = create_graph(testes * 2);
+
+    char str_1[16];
+    char str_2[16];
+
+    int i, j;
+
+    for (i = 0; i < testes; ++i) {
+        scanf(" %s", str_1);
+        scanf(" %s", str_2);
+
+        if (!contains(g, str_1)) {
+            g = init_vertex_with_str(g, str_1);
+        }
+        if (!contains(g, str_2)) {
+            g = init_vertex_with_str(g, str_2);
+        }
+
+//        printf("cs %d\n", g->current_size);
+
+        add_edge_directional(g, get_index(g, str_1), get_index(g, str_2));
+
+/*
+
+        printf("\n");
+        print_graph(g);
+        printf("\n");
+*/
+
+    }
+
+    print_graph(g);
+
+    while (g->current_size) {
+        g = remove_leafs(g);
+
+        print_graph(g);
+        printf("\n");
+    }
+
+//
+//    remove_leafs(g,);
 }
