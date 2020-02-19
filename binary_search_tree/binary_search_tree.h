@@ -19,8 +19,9 @@ struct binary_search_tree {
 };
 
 bs_tree *create_empty_binary_tree();
-bs_tree *create_binary_search_tree(int key, int data, int size, int height, int depth, bs_tree *parent, bs_tree *left_tree,
-                                   bs_tree *right_tree);
+bs_tree *create_binary_search_tree(int key, int data);
+bs_tree *create_binary_search_tree_all_params(int key, int data, int size, int height, int depth, bs_tree *parent, bs_tree *left_tree,
+                                              bs_tree *right_tree);
 bs_tree *create_binary_tree(int item, bs_tree *left, bs_tree *right);
 bs_tree* insert(bs_tree *parent_tree, bs_tree* tree);
 bs_tree *add(bs_tree *parent_tree, int key, int data);
@@ -55,6 +56,8 @@ int get_number_of_leafs(bs_tree *tree);
 
 
 bs_tree* generate_bs_tree(char *string, int *cont);
+
+
 
 
 #endif //BINARY_SEARCH_TREE_BINARY_SEARCH_TREE_H

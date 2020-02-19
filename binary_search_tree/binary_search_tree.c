@@ -10,10 +10,16 @@ bs_tree *create_empty_binary_tree() {
     return NULL;
 }
 
-bs_tree *create_binary_search_tree(int key, int data, int size, int height, int depth, bs_tree *parent, bs_tree *left_tree,
-                                   bs_tree *right_tree) {
+bs_tree *create_binary_search_tree(int key, int data) {
+    return create_binary_search_tree_all_params(key, data, 1, 0, 0, NULL, NULL, NULL);
 
-    bs_tree *new_tree = (bs_tree*) malloc(sizeof(bs_tree));
+}
+
+bs_tree *create_binary_search_tree_all_params(int key, int data, int size, int height, int depth, bs_tree *parent,
+                                              bs_tree *left_tree,
+                                              bs_tree *right_tree) {
+
+    bs_tree *new_tree = (bs_tree *) malloc(sizeof(bs_tree));
 
     new_tree->parent = parent;
     new_tree->key = key;
@@ -31,7 +37,7 @@ int is_empty(bs_tree *tree) {
     return (tree == NULL);
 }
 
-bs_tree* insert(bs_tree *parent_tree, bs_tree* tree) {
+bs_tree *insert(bs_tree *parent_tree, bs_tree *tree) {
     bs_tree *y = NULL;
     bs_tree *x = parent_tree;
 
@@ -61,7 +67,7 @@ bs_tree* insert(bs_tree *parent_tree, bs_tree* tree) {
 }
 
 bs_tree *add(bs_tree *parent_tree, int key, int data) {
-    bs_tree *new_tree = create_binary_search_tree(key, data, 1, 0, 0, parent_tree, NULL, NULL);
+    bs_tree *new_tree = create_binary_search_tree_all_params(key, data, 1, 0, 0, parent_tree, NULL, NULL);
 
     parent_tree = insert(parent_tree, new_tree);
 
@@ -69,8 +75,7 @@ bs_tree *add(bs_tree *parent_tree, int key, int data) {
 }
 
 
-
-bs_tree* search(bs_tree *tree, int key) {
+bs_tree *search(bs_tree *tree, int key) {
     if (is_empty(tree) || key == tree->key) {
         return tree;
     } else if (key < tree->key) {
@@ -81,7 +86,7 @@ bs_tree* search(bs_tree *tree, int key) {
 }
 
 /* On most computers, the iterative version is more efficient. Cormen - Introduction to Algorithms*/
-bs_tree* iterative_search(bs_tree *tree, int key) {
+bs_tree *iterative_search(bs_tree *tree, int key) {
     while (!is_empty(tree) || key != tree->key) {
         if (key < tree->key) {
             tree = tree->left;
@@ -92,14 +97,14 @@ bs_tree* iterative_search(bs_tree *tree, int key) {
     return tree;
 }
 
-bs_tree* min(bs_tree *tree) {
+bs_tree *min(bs_tree *tree) {
     while (!is_empty(tree->left)) {
         tree = tree->left;
     }
     return tree;
 }
 
-bs_tree* max(bs_tree *tree) {
+bs_tree *max(bs_tree *tree) {
     while (!is_empty(tree->right)) {
         tree = tree->right;
     }
@@ -107,7 +112,7 @@ bs_tree* max(bs_tree *tree) {
 }
 
 
-bs_tree* predecessor(bs_tree *tree) {
+bs_tree *predecessor(bs_tree *tree) {
     if (!is_empty(tree->left)) {
         return max(tree->left);
     }
@@ -122,7 +127,7 @@ bs_tree* predecessor(bs_tree *tree) {
     return parent;
 }
 
-bs_tree* successor(bs_tree *tree) {
+bs_tree *successor(bs_tree *tree) {
     if (!is_empty(tree->right)) {
         return min(tree->right);
     }
@@ -145,7 +150,7 @@ int size(bs_tree *tree) {
     return size(tree->left) + size(tree->right) + 1;
 }
 
-bs_tree* update_size(bs_tree *tree) {
+bs_tree *update_size(bs_tree *tree) {
     if (is_empty(tree->parent)) {
         tree->size = size(tree);
         return tree;
@@ -168,7 +173,7 @@ int height(bs_tree *tree) {
     return max_number(height(tree->left), height(tree->right)) + 1;
 }
 
-bs_tree* update_height(bs_tree *tree) {
+bs_tree *update_height(bs_tree *tree) {
     tree->height = height(tree);
     return tree;
 }
@@ -204,7 +209,7 @@ bs_tree *transplant(bs_tree *root, bs_tree *u, bs_tree *v) {
     return root;
 }
 
-bs_tree* remove_node(bs_tree *tree, int key) {
+bs_tree *remove_node(bs_tree *tree, int key) {
     bs_tree *node = search(tree, key);
 
     if (node) {
@@ -214,7 +219,7 @@ bs_tree* remove_node(bs_tree *tree, int key) {
     return tree;
 }
 
-bs_tree *delete(bs_tree *root, bs_tree* node) {
+bs_tree *delete(bs_tree *root, bs_tree *node) {
     if (is_empty(node->left)) {
         root = transplant(root, node, node->right);
         root = update_size(node->parent);
@@ -297,7 +302,7 @@ int get_number_of_leafs(bs_tree *tree) {
 int is_leaf(bs_tree *tree) {
     if (is_empty(tree)) {
         return 0;
-    } else if (is_empty(tree->left) && is_empty(tree->right)){
+    } else if (is_empty(tree->left) && is_empty(tree->right)) {
         return 1;
     }
 
@@ -316,7 +321,7 @@ int get_number_of_one_children_tree(bs_tree *tree) {
     return get_number_of_one_children_tree(tree->left) + get_number_of_one_children_tree(tree->right);
 }
 
-bs_tree* get_parents_with_one_child(bs_tree *tree, bs_tree *parents_of_one_child_tree) {
+bs_tree *get_parents_with_one_child(bs_tree *tree, bs_tree *parents_of_one_child_tree) {
     if (is_empty(tree) || is_leaf(tree)) {
         return parents_of_one_child_tree;
     }
@@ -332,7 +337,8 @@ bs_tree* get_parents_with_one_child(bs_tree *tree, bs_tree *parents_of_one_child
 }
 
 int is_complete(bs_tree *tree) {
-    if (tree->height == 0 || ((get_number_of_one_children_tree(tree) == 0) && (tree->left->height == tree->right->height))) {
+    if (tree->height == 0 ||
+        ((get_number_of_one_children_tree(tree) == 0) && (tree->left->height == tree->right->height))) {
         return 1;
     }
 
@@ -340,8 +346,8 @@ int is_complete(bs_tree *tree) {
 }
 
 
-bs_tree* create_binary_tree(int item, bs_tree *left, bs_tree *right){
-    bs_tree *new_bt = (bs_tree*) malloc(sizeof(bs_tree));
+bs_tree *create_binary_tree(int item, bs_tree *left, bs_tree *right) {
+    bs_tree *new_bt = (bs_tree *) malloc(sizeof(bs_tree));
 
     new_bt->key = item;
     new_bt->height = 1;
@@ -352,20 +358,20 @@ bs_tree* create_binary_tree(int item, bs_tree *left, bs_tree *right){
 }
 
 
-bs_tree* generate_bs_tree(char *string, int *cont) {
+bs_tree *generate_bs_tree(char *string, int *cont) {
     bs_tree *bt = NULL;
 
     char string_value[100];
     int string_to_number;
 
-    while(string[*cont] == '(') {
+    while (string[*cont] == '(') {
         *cont += 1;
     }
 
-    if(string[*cont] != ')') {
+    if (string[*cont] != ')') {
         int i = 0;
 
-        while(string[*cont] != '(') {
+        while (string[*cont] != '(') {
             string_value[i++] = string[*cont];
             *cont += 1;
         }

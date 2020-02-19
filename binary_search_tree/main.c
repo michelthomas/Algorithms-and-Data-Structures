@@ -1,18 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "binary_search_tree.h"
 
-void teste();
+void arvore_bin_completa();
 
 // Inserção em Árvores de Busca Binária - Huxley p.783
 void insercao();
 
+// Madd Code
+void madd_code();
+
 int main() {
-    insercao();
+    madd_code();
     return 0;
 }
 
-void teste() {
+void arvore_bin_completa() {
     bs_tree *my_bt = NULL;
 
     char string[100];
@@ -50,4 +54,57 @@ void insercao() {
         print_pre_order_with_parentheses(t);
         printf("\n----\n");
     }
+}
+
+void madd_code() {
+    char str_tree[] = {"MGTCKQWAEILORUY BDFHJNPSVXZ"};
+
+    bs_tree *t = NULL;
+
+    int i;
+
+
+    for (i = 0; i < strlen(str_tree); ++i) {
+
+        t = add(t, str_tree[i], str_tree[i]);
+
+    }
+
+    char str[1000];
+    char msg[1000];
+
+    scanf("%[^\n]", str);
+    int j = 0;
+
+    bs_tree *aux = t;
+
+    for (i = 0; i < strlen(str); ++i) {
+        switch (str[i]) {
+            case '@':
+                msg[j] = (char) t->key;
+                j++;
+                i++;
+                break;
+            case '*':
+                msg[j] = (char) aux->key;
+                j++;
+                aux = t;
+                break;
+            case '-':
+                aux = aux->left;
+                break;
+            case '|':
+                aux = aux->right;
+                break;
+            default:
+                printf("Erro!!");
+        }
+    }
+
+    msg[j] = '\0';
+
+    printf("\n%s", msg);
+
+
+    //print_in_order(t);
 }

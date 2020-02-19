@@ -80,6 +80,12 @@
 		<Unit filename="C:/Users/MichelT/Documents/GitHub/Algorithms-and-Data-Structures/binary_search_tree/binary_search_tree.h">
 			<Option target="binary_search_tree"/>
 		</Unit>
+		<Unit filename="C:/Users/MichelT/Documents/GitHub/Algorithms-and-Data-Structures/binary_search_tree/doubly_linked_list.c">
+			<Option target="binary_search_tree"/>
+		</Unit>
+		<Unit filename="C:/Users/MichelT/Documents/GitHub/Algorithms-and-Data-Structures/binary_search_tree/doubly_linked_list.h">
+			<Option target="binary_search_tree"/>
+		</Unit>
 		<Unit filename="C:/Users/MichelT/Documents/GitHub/Algorithms-and-Data-Structures/binary_search_tree/main.c">
 			<Option target="binary_search_tree"/>
 		</Unit>
