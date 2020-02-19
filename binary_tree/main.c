@@ -1,7 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #include "binary_tree.h"
+#include "doubly_linked_list.h"
 
 // Árvore de Busca Binária - Huxley p.546
 void arv_busc_b();
@@ -29,257 +32,213 @@ void somando_arvores();
 int contem_soma(b_tree *t, int soma);
 
 
+void different_tree();
+
+void difefrent_tree_2();
+
+
 int main() {
 
-    somando_arvores();
+    different_tree();
 
     return 0;
 }
 
-void profundidade_no() {
-    char str[1000];
-    scanf("%[^\n]", str);
 
-    int n = 0;
-    scanf("%d", &n);
+b_tree *create_huffman_tree(node *pq) {
 
-    b_tree *t = create_binary_tree_from_string(str);
+    b_tree *l = NULL;
+    b_tree *r = NULL;
 
-    /*print_pre_order(t);
-    printf("\n");
-    print_in_order(t);
-    printf("\n");
-    print_post_order(t);
-    printf("\n");*/
+    while (!is_empty_list(pq->next)) {
 
-    b_tree *t_n = search(t, n);
+/*
+        if (pq->data == NULL) {
+            l = create_binary_tree(pq->valor, 0, pq->key, NULL, NULL, 0);
+        } else {
+            l = create_binary_tree('*', 0, pq->key, NULL, NULL, 0);
+        }*/
 
-    if (is_empty(t_n)) {
-        printf("NAO ESTA NA ARVORE\n-1");
-    } else {
-        printf("ESTA NA ARVORE\n%d", depth(t_n));
-    }
-}
+        l = pq->tree;
+        pq = pq->next;
 
-void arv_busc_b() {
-    char str[1000];
-    scanf("%[^\n]", str);
-
-    b_tree *t = create_binary_tree_from_string(str);
-
-    /*print_pre_order(t);
-    printf("\n");
-    print_in_order(t);
-    printf("\n");
-    print_post_order(t);
-    printf("\n");*/
-
-    if (is_binary_search_tree(t)) {
-        printf("VERDADEIRO");
-    } else {
-        printf("FALSO");
-    }
-}
-
-void nivel_arvore() {
-    int n = 0;
-    scanf("%d", &n);
-
-    if (n > 0) {
-        int tree_matrix[6][3];
-        int i, j;
-
-        for (i = 0; i < 6; ++i) {
-            scanf("%d", &tree_matrix[i][0]);
-            scanf("%d", &tree_matrix[i][1]);
-            scanf("%d", &tree_matrix[i][2]);
+        /*if (pq->data == NULL) {
+            r = create_binary_tree(pq->valor, 0, pq->key, NULL, NULL, 0);
+        } else {
+            r = create_binary_tree('*', 0, pq->key, NULL, NULL, 0);
         }
+        */
+        r = pq->tree;
+        pq = pq->next;
 
-        b_tree *t = NULL;
+        printf("\nl: %c --- r: %c\n", l->key, r->key);
 
-        t = construct_tree(tree_matrix, 0);
-        /*print_pre_order(t);
-        printf("\n");*/
+        b_tree *parent_tree = create_binary_tree('*', l->freq + r->freq, 0, l, r);
 
-        // (n / 2) + 1 = max nodes of last level
-        int values_per_level[n][n];
+        printf("parent: %d %c %c\n", parent_tree->freq, parent_tree->left->key, parent_tree->right->key);
+        pq = add_ordered_internal_node(pq, parent_tree);
 
-        int levels, index_n;
-
-        int indexes_column[n];
-
-        for (i = 0; i < n; ++i) {
-            indexes_column[i] = -1;
-            for (j = 0; j < n; ++j) {
-                values_per_level[i][j] = -1;
-            }
-        }
-
-
-        get_levels(n, t, tree_matrix, values_per_level, 0, indexes_column);
-
-        /*for (i = 0; i < n; ++i) {
-            printf("%d ", indexes_column[i]);
-        }
-        printf("\n");*/
-
-        int max, min;
-
-        for (i = 0; values_per_level[i][0] != -1; ++i) {
-
-            max = min = values_per_level[i][0];
-
-            for (j = 1; j <= indexes_column[i]; ++j) {
-                //printf("%d ", values_per_level[i][j]);
-
-                if (values_per_level[i][j] > max) {
-                    max = values_per_level[i][j];
-                } else if (values_per_level[i][j] < min) {
-                    min = values_per_level[i][j];
-                }
-            }
-
-            printf("Nivel %d: Maior = %d, Menor = %d", i + 1, max, min);
-
-            printf("\n");
-        }
-    }
-}
-
-void get_levels(int n, b_tree *tree, int tree_matrix[][3], int values[][n], int level, int index_column[n]) {
-    if (tree != NULL) {
-        (index_column[level])++;
-        values[level][index_column[level]] = tree->valor;
-
-        level++;
-
-        get_levels(n, tree->left, tree_matrix, values, level, index_column);
-        get_levels(n, tree->right, tree_matrix, values, level, index_column);
-    }
-}
-
-b_tree *construct_tree(int tree_m[][3], int i) {
-    if (i == -1) {
-        return NULL;
+        print_linked_list(pq);
+        printf("\n\n");
     }
 
-    b_tree *t = create_binary_tree(i, tree_m[i][0], NULL, NULL);
 
-    t->left = construct_tree(tree_m, tree_m[i][1]);
-    t->right = construct_tree(tree_m, tree_m[i][2]);
+    b_tree *t = pq->tree;
 
     return t;
 }
 
-int max(int x, int y) {
-    return x > y ? x : y;
-}
+void map_paths(b_tree *tree, char fake_hash[][500], char *path, int i) {
 
-int p1(b_tree *t) {
+    if (!is_empty(tree))
+    {
+        if (is_leaf(tree))
+        {
+            path[i] = '\0';
 
-    if (is_leaf(t)) {
-        return t->key;
-    }
+            char *finish_path = (char *) malloc(sizeof(char) * (strlen(path) + 1));
 
-    return max(t->key * p1(t->left), t->key * p1(t->right));
-}
+            strcpy(finish_path, path);
 
-void p1_da_arvore() {
-    int h;
-    scanf("%d", &h);
-
-    int qtd_node = (int) pow(2, h) - 1;
-
-    int arr[qtd_node];
-
-    for (int i = 0; i < qtd_node; ++i) {
-        scanf("%d", &arr[i]);
-    }
-
-    b_tree *t = create_binary_tree_from_arr(arr, qtd_node);
-
-    printf("%d", p1(t));
-
-}
-
-int _contem_soma(b_tree *t, int soma_atual, int soma) {
-
-    if (is_empty(t)) {
-        return 0;
-    }
-
-    if (is_leaf(t)) {
-
-        if (t->key + soma_atual == soma) {
-            return 1;
+            strcpy(fake_hash[tree->key], finish_path);
         }
+        else
+        {
+            if (!is_empty(tree->left))
+            {
+                path[i] = '0';
+                map_paths(tree->left, fake_hash, path, i + 1);
+            }
 
-        return 0;
-    }
-
-    if (_contem_soma(t->left, t->key + soma_atual, soma)) {
-        return 1;
-    }
-
-    return _contem_soma(t->right, t->key + soma_atual, soma);
-}
-
-int contem_soma(b_tree *t, int soma) {
-
-    if (is_empty(t)) {
-        return 0;
-    }
-
-    return _contem_soma(t, 0, soma);
-}
-
-void get_string(char *str) {
-
-    char c;
-
-    int i = 0;
-    int qtd_parenteses = 0;
-
-    do {
-        scanf("%c", &c);
-
-        if (c != ' ' && c != '\n') {
-            str[i] = c;
-            i++;
-
-            if (c == ')') {
-                qtd_parenteses--;
-            } else if (c == '(') {
-                qtd_parenteses++;
+            if (!is_empty(tree->right))
+            {
+                path[i] = '1';
+                map_paths(tree->right, fake_hash, path, i + 1);
             }
         }
-    } while (qtd_parenteses);
+    }
 
-    str[i] = '\0';
 }
 
-void somando_arvores() {
-    int soma = 0;
-    char str[10000];
+void different_tree() {
 
-    scanf("%d ", &soma);
+    char str[257];
 
-    while (soma != -1000) {
+    scanf("%[^\n]", str);
 
-        get_string(str);
+    int freq[256];
 
-        //printf("%s\n---\n", str);
+    int i;
 
-        b_tree *t = create_binary_tree_from_string(str);
-
-        //print_pre_order_with_parentheses(t);
-
-        if (contem_soma(t, soma)) {
-            printf("sim\n");
-        } else {
-            printf("nao\n");
-        }
-
-        scanf("%d ", &soma);
+    for (i = 0; i < 256; ++i) {
+        freq[i] = 0;
     }
+    for (i = 0; i < strlen(str); ++i) {
+        freq[(int) str[i]]++;
+    }
+
+
+    int qtd_char = 0;
+    for (int j = 0; j < 256; ++j) {
+        if (freq[j]) {
+            qtd_char++;
+            printf("%c: %d\n", j, freq[j]);
+        }
+    }
+
+    printf("\nqtdchar: %d\n", qtd_char);
+
+    node *pq = create_linked_list();
+
+    b_tree *aux = NULL;
+    for (i = 0; i < strlen(str); ++i) {
+        aux = create_binary_tree((int) str[i], freq[(int) str[i]], 0,NULL, NULL);
+
+//        printf("aux: %c %d\n\n", aux->key, aux->freq);
+        pq = add_ordered_huff_tree(pq, aux);
+        printf("\n");
+        print_linked_list(pq);
+        printf("\n");
+    }
+
+    print_linked_list(pq);
+
+    b_tree *t = create_huffman_tree(pq);
+
+    char fake_hash[256][500];
+    char path[500];
+
+    map_paths(t, fake_hash, path, 0);
+
+
+
+
+    printf("Tree\t-\t");
+    print_in_order(t);
+    for (i = 0; i < 256; ++i) {
+        if (freq[i]) {
+            printf("\n%c\t-\t%s", i, fake_hash[i]);
+        }
+    }
+
+
+}
+
+
+void print_post_order(b_tree *tree) {
+
+}
+/*
+b_tree *get_tree(char str[], int inStrt, int inEnd,  int *p_index) {
+    // Base case
+    if (inStrt > inEnd)
+        return NULL;
+
+    /* Pick current node from Postorder traversal using
+       postIndex and decrement postIndex */
+    b_tree* node = create_binary_tree(str[*p_index]);
+    (*p_index)--;
+
+    /* If this node has no children then return */
+    if (inStrt == inEnd)
+        return node;
+
+    /* Else find the index of this node in Inorder
+       traversal */
+    int iIndex = search(in, inStrt, inEnd, node->data);
+
+    /* Using index in Inorder traversal, construct left and
+       right subtress */
+    node->right = get_tree(str, iIndex + 1, inEnd, p_index);
+    node->left = get_tree(post, inStrt, iIndex - 1, p_index);
+
+    return node;
+} */
+b_tree *get_tree_post_order(b_tree *t, char str, int n) {
+
+    if (n < 0) {
+        return t;
+    }
+
+    if (str[n] == '*') {
+
+        t->left = create_binary_tree(str[n ])
+
+    }
+
+    b_tree *l, *r;
+
+    l->left = get_tree_post_order(t, str, n - 1);
+    r->right = get_tree_post_order(t, str, n - 1);
+
+    return t;
+
+}
+void difefrent_tree_2() {
+
+    char str[500];
+    scanf("%s", str);
+
+    //get_tree_post_order(str, n)
+
 }

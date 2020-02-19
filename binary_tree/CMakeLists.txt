@@ -3,4 +3,4 @@ project(binary_tree C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(binary_tree main.c binary_tree.h binary_tree.c)
+add_executable(binary_tree main.c binary_tree.h binary_tree.c doubly_linked_list.h doubly_linked_list.c)

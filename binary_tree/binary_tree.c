@@ -7,14 +7,15 @@
 
 #include "binary_tree.h"
 
-b_tree *create_binary_tree(int item, int valor, b_tree *left, b_tree *right) {
+b_tree *create_binary_tree(int item, int freq, int valor, b_tree *left, b_tree *right) {
     b_tree *bt = (b_tree *) malloc(sizeof(b_tree));
 
     bt->key = item;
+    bt->freq = freq;
     bt->valor = valor;
     bt->parent = NULL;
-    bt->left = NULL;
-    bt->right = NULL;
+    bt->left = left;
+    bt->right = right;
 
     return bt;
 }
@@ -54,7 +55,7 @@ int is_empty(b_tree *tree) {
 
 void print_pre_order(b_tree *tree) {
     if (!is_empty(tree)) {
-        printf("%d ", tree->key);
+        printf("%c", tree->valor);
         print_pre_order(tree->left);
         print_pre_order(tree->right);
     }
@@ -63,7 +64,7 @@ void print_pre_order(b_tree *tree) {
 void print_in_order(b_tree *tree) {
     if (!is_empty(tree)) {
         print_in_order(tree->left);
-        printf("%d ", tree->key);
+        printf("%c", tree->key);
         print_in_order(tree->right);
     }
 }
@@ -160,7 +161,7 @@ b_tree *_create_binary_tree_from_string(char *str, int *i) {
     b_tree *new_bt = NULL;
 
     if (str[*i] != ')') {
-        new_bt = create_binary_tree(get_key_number(str, i), 0, NULL, NULL);
+//        new_bt = create_binary_tree(get_key_number(str, i), 0, 0, NULL, NULL, 0);
         new_bt->left = _create_binary_tree_from_string(str, i);
 
         if (!is_empty(new_bt->left)) {
@@ -193,7 +194,7 @@ b_tree *_create_binary_tree_from_arr(b_tree *t, int arr[], int i, int n) {
         return NULL;
     }
 
-    t = create_binary_tree(arr[i - 1], arr[i - 1], NULL, NULL);
+//    t = create_binary_tree(arr[i - 1], 0, arr[i - 1], NULL, NULL, 0);
 
     t->left = _create_binary_tree_from_arr(t, arr, 2 * i, n);
     t->right = _create_binary_tree_from_arr(t, arr, 2 * i + 1, n);

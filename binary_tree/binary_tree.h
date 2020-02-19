@@ -8,13 +8,15 @@
 
 typedef struct b_tree {
     int key;
+    char c;
+    int freq;
     int valor;
     struct b_tree *parent;
     struct b_tree *left;
     struct b_tree *right;
 } b_tree;
 
-b_tree *create_binary_tree(int item, int valor, b_tree *left, b_tree *right);
+b_tree *create_binary_tree(int item, int freq, int valor, b_tree *left, b_tree *right);
 
 b_tree *search(b_tree *tree, int key);
 

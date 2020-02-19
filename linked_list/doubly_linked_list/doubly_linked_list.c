@@ -6,11 +6,11 @@
 #include <stdlib.h>
 #include "doubly_linked_list.h"
 
-node* create_linked_list() {
+node *create_linked_list() {
     return NULL;
 }
 
-node* get_tail(node *head) {
+node *get_tail(node *head) {
     if (head->next == NULL) {
         return head;
     }
@@ -18,8 +18,93 @@ node* get_tail(node *head) {
     return get_tail(head->next);
 }
 
-node* add_begin(node* head, int key) {
-    node *new_node = (node*) malloc(sizeof(node));
+node *create_node(int key, int data) {
+    node *new_node = (node *) malloc(sizeof(node));
+
+    new_node->key = key;
+    new_node->data = data;
+    new_node->prev = NULL;
+    new_node->next = NULL;
+
+    return new_node;
+}
+
+node *add_ordered(node *head, int key, int data) {
+    node *new_node = create_node(key, data);
+    node *previous = NULL;
+    node *current = head;
+
+    if (head == NULL) {
+
+        return new_node;
+
+    } else if (head->key == key) {
+
+        if (head->data == data) {
+            return head;
+        } else if (head->data > data) {
+            new_node->next = head;
+            head->prev = new_node;
+            return new_node;
+        } else {
+            /*new_node->prev = head;
+            new_node->next = head->next;
+            head->next = new_node;*/
+            head->next = add_ordered(head->next, key, data);
+            return head;
+        }
+
+    } else if (head->key > key) {
+
+        new_node->next = head;
+        head->prev = new_node;
+        return new_node;
+
+    }
+
+    while (current != NULL && current->key < key) {
+        previous = current;
+        current = current->next;
+    }
+
+    if (current != NULL) {
+        if (current->key == key) {
+
+            if (current->data == data) {
+                return head;
+            } else if (current->data > data) {
+                new_node->next = current;
+                current->prev = new_node;
+                return head;
+            } else {/*
+                new_node->prev = current;
+                new_node->next = current->next;
+                current->next = new_node;*/
+                current->next = add_ordered(current->next, key, data);
+                return head;
+            }
+
+        }
+    }
+
+    if (previous->next != NULL) {
+
+        previous->next = new_node;
+        new_node->next = current;
+        new_node->prev = previous;
+
+    } else {
+
+        previous->next = new_node;
+        new_node->prev = previous;
+
+    }
+
+    return head;
+}
+
+node *add_begin(node *head, int key) {
+    node *new_node = (node *) malloc(sizeof(node));
 
     if (!new_node) {
         printf("Memory allocation error!\n");
@@ -39,8 +124,8 @@ node* add_begin(node* head, int key) {
     return new_node;
 }
 
-node* add_end(node* head, int key) {
-    node *new_node = (node*) malloc(sizeof(node));
+node *add_end(node *head, int key) {
+    node *new_node = (node *) malloc(sizeof(node));
 
     if (!new_node) {
         printf("Memory allocation error!\n");
@@ -60,7 +145,7 @@ node* add_end(node* head, int key) {
 }
 
 
-node* search(node* head, int key) {
+node *search(node *head, int key) {
     while (head != NULL) {
         if (head->key == key) {
             return head;
@@ -71,7 +156,7 @@ node* search(node* head, int key) {
     return NULL;
 }
 
-node* remove_node(node *head, node *node_to_remove) {
+node *remove_node(node *head, node *node_to_remove) {
 
     if (node_to_remove == NULL) {
         return head;
@@ -92,11 +177,11 @@ node* remove_node(node *head, node *node_to_remove) {
     return head;
 }
 
-node* remove_node_by_key(node* head, int key) {
+node *remove_node_by_key(node *head, int key) {
     return remove_node(head, search(head, key));
 }
 
-node* remove_recursively (node *head, node *prev, node *current, int key) {
+node *remove_recursively(node *head, node *prev, node *current, int key) {
     if (current == NULL) {
         return head;
     }
@@ -113,7 +198,7 @@ node* remove_recursively (node *head, node *prev, node *current, int key) {
     return remove_recursively(head, current, current->next, key);
 }
 
-int is_empty(node* head) {
+int is_empty(node *head) {
     return (head == NULL);
 }
 
